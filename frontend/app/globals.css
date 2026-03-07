@@ -1,26 +1,105 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #eef4ff;
+  --foreground: #12223a;
+  --surface: #ffffff;
+  --line: #d8e4f2;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html,
+body {
+  margin: 0;
+  min-height: 100%;
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(circle at 12% 8%, #d7e9ff 0, transparent 28%),
+    radial-gradient(circle at 90% 16%, #ffe7be 0, transparent 24%),
+    linear-gradient(180deg, #f4f8ff 0%, #f8fbff 40%, #fef7eb 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sora), "Trebuchet MS", sans-serif;
+}
+
+.milestudy-surface {
+  position: relative;
+}
+
+.milestudy-surface::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgb(15 23 42 / 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(15 23 42 / 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(to bottom, black 35%, transparent 100%);
+}
+
+.fire-orb {
+  height: 92px;
+  width: 92px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: rgb(255 255 255 / 0.95);
+  font-family: var(--font-space-mono), monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: 0 10px 24px rgb(15 23 42 / 0.15);
+}
+
+.fire-level-0 {
+  background: radial-gradient(circle at 40% 30%, #cfd8e3 0, #94a3b8 68%, #64748b 100%);
+}
+
+.fire-level-1 {
+  background: radial-gradient(circle at 35% 25%, #ffd178 0, #fb923c 55%, #ea580c 100%);
+}
+
+.fire-level-2 {
+  background: radial-gradient(circle at 35% 25%, #ffd178 0, #f97316 45%, #dc2626 100%);
+}
+
+.fire-level-3 {
+  background: radial-gradient(circle at 35% 25%, #ffe694 0, #fb923c 40%, #b91c1c 100%);
+}
+
+.fire-level-4 {
+  background: radial-gradient(circle at 35% 25%, #ffe694 0, #f59e0b 40%, #be123c 100%);
+}
+
+.fire-level-5 {
+  background: radial-gradient(circle at 35% 25%, #fff6c9 0, #facc15 35%, #f97316 70%, #7f1d1d 100%);
+}
+
+.fire-pulse {
+  animation: firePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes firePulse {
+  0% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 10px 24px rgb(15 23 42 / 0.2);
+  }
+
+  50% {
+    transform: translateY(-4px) scale(1.04);
+    box-shadow:
+      0 14px 32px rgb(251 146 60 / 0.42),
+      0 0 28px rgb(250 204 21 / 0.3);
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+    box-shadow: 0 10px 24px rgb(15 23 42 / 0.2);
+  }
 }
