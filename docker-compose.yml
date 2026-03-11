@@ -10,13 +10,28 @@ services:
       - frontend
 
   backend:
-    image: php:8.4-cli
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     working_dir: /var/www/html
     volumes:
       - ./backend:/var/www/html
-    command: sh -lc "php -S 0.0.0.0:8000 -t public"
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      APP_DEBUG: ${APP_DEBUG:-false}
+      DB_CONNECTION: ${DB_CONNECTION:-mysql}
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: ${MYSQL_DATABASE:-milestudy}
+      DB_USERNAME: ${MYSQL_USER:-milestudy_app}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-ganti-password-kuat}
+      CACHE_STORE: ${CACHE_STORE:-file}
+      SESSION_DRIVER: ${SESSION_DRIVER:-file}
+      MYSQL_ATTR_SSL_VERIFY_SERVER_CERT: ${MYSQL_ATTR_SSL_VERIFY_SERVER_CERT:-false}
+    command: sh -lc "php artisan migrate --force && (php artisan storage:link --force >/dev/null 2>&1 || true) && php -S 0.0.0.0:8000 -t public"
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
 
   frontend:
     image: node:20-alpine
@@ -29,13 +44,21 @@ services:
 
   mysql:
     image: mysql:8.0
+    command: --skip-name-resolve --local-infile=0
     environment:
-      MYSQL_DATABASE: milestudy
-      MYSQL_USER: milestudy
-      MYSQL_PASSWORD: milestudy123
-      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-milestudy}
+      MYSQL_USER: ${MYSQL_USER:-milestudy_app}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-ganti-password-kuat}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-ganti-root-password-kuat}
+      MYSQL_ROOT_HOST: localhost
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+      start_period: 15s
 
 volumes:
   mysql_data:

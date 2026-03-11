@@ -1,23 +1,11 @@
 import type { Metadata } from "next";
-import { Sora, Space_Mono } from "next/font/google";
 
 import "./globals.css";
 
-const sora = Sora({
-  variable: "--font-sora",
-  subsets: ["latin"],
-});
-
-const spaceMono = Space_Mono({
-  variable: "--font-space-mono",
-  subsets: ["latin"],
-  weight: ["400", "700"],
-});
-
 export const metadata: Metadata = {
-  title: "Milestudy Prototype",
+  title: "Milestudy Workspace",
   description:
-    "Prototype LMS Milestudy: assignment management, gamification, analytics, streak fire, dan smart attendance.",
+    "Milestudy Workspace untuk operasional harian: kelola kelas, tugas, dan siswa.",
 };
 
 export default function RootLayout({
@@ -27,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
-      <body className={`${sora.variable} ${spaceMono.variable} antialiased`}>{children}</body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

@@ -16,11 +16,17 @@ export function ApiStatusCard() {
 
   useEffect(() => {
     let active = true;
+    const abortController = new AbortController();
+    const timeoutId = window.setTimeout(() => abortController.abort(), 4000);
 
     const load = async () => {
       try {
         const response = await fetch("/api/prototype/summary", {
-          cache: "no-store",
+          cache: "default",
+          headers: {
+            Accept: "application/json",
+          },
+          signal: abortController.signal,
         });
 
         if (!response.ok) {
@@ -48,6 +54,8 @@ export function ApiStatusCard() {
 
     return () => {
       active = false;
+      window.clearTimeout(timeoutId);
+      abortController.abort();
     };
   }, []);
 

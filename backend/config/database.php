@@ -2,6 +2,39 @@
 
 use Illuminate\Support\Str;
 
+$mysqlSslCaOption = PHP_VERSION_ID >= 80500
+    ? (defined(\Pdo\Mysql::class.'::ATTR_SSL_CA') ? \Pdo\Mysql::ATTR_SSL_CA : null)
+    : (defined('PDO::MYSQL_ATTR_SSL_CA') ? constant('PDO::MYSQL_ATTR_SSL_CA') : null);
+
+$mysqlSslVerifyOption = PHP_VERSION_ID >= 80500
+    ? (defined(\Pdo\Mysql::class.'::ATTR_SSL_VERIFY_SERVER_CERT')
+        ? \Pdo\Mysql::ATTR_SSL_VERIFY_SERVER_CERT
+        : null)
+    : (defined('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')
+        ? constant('PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT')
+        : null);
+$mysqlMultiStatementsOption = defined('PDO::MYSQL_ATTR_MULTI_STATEMENTS')
+    ? constant('PDO::MYSQL_ATTR_MULTI_STATEMENTS')
+    : null;
+
+$mysqlVerifyServerCertificate = filter_var(
+    env('MYSQL_ATTR_SSL_VERIFY_SERVER_CERT', env('APP_ENV') === 'production'),
+    FILTER_VALIDATE_BOOL,
+    FILTER_NULL_ON_FAILURE
+) ?? false;
+$dbConnectionTimeout = max(1, (int) env('DB_CONNECTION_TIMEOUT', 5));
+
+$mysqlConnectionOptions = extension_loaded('pdo_mysql')
+    ? array_filter([
+        \PDO::ATTR_EMULATE_PREPARES => false,
+        \PDO::ATTR_STRINGIFY_FETCHES => false,
+        \PDO::ATTR_TIMEOUT => $dbConnectionTimeout,
+        $mysqlMultiStatementsOption => false,
+        $mysqlSslCaOption => env('MYSQL_ATTR_SSL_CA'),
+        $mysqlSslVerifyOption => $mysqlVerifyServerCertificate,
+    ], static fn ($value, $option): bool => ! is_null($option) && ! is_null($value), ARRAY_FILTER_USE_BOTH)
+    : [];
+
 return [
 
     /*
@@ -56,11 +89,13 @@ return [
             'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
             'prefix' => '',
             'prefix_indexes' => true,
-            'strict' => true,
+            'strict' => filter_var(
+                env('DB_STRICT_MODE', true),
+                FILTER_VALIDATE_BOOL,
+                FILTER_NULL_ON_FAILURE
+            ) ?? true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                (PHP_VERSION_ID >= 80500 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            'options' => $mysqlConnectionOptions,
         ],
 
         'mariadb' => [
@@ -76,11 +111,13 @@ return [
             'collation' => env('DB_COLLATION', 'utf8mb4_unicode_ci'),
             'prefix' => '',
             'prefix_indexes' => true,
-            'strict' => true,
+            'strict' => filter_var(
+                env('DB_STRICT_MODE', true),
+                FILTER_VALIDATE_BOOL,
+                FILTER_NULL_ON_FAILURE
+            ) ?? true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                (PHP_VERSION_ID >= 80500 ? \Pdo\Mysql::ATTR_SSL_CA : \PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            'options' => $mysqlConnectionOptions,
         ],
 
         'pgsql' => [
@@ -95,7 +132,7 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
             'search_path' => 'public',
-            'sslmode' => env('DB_SSLMODE', 'prefer'),
+            'sslmode' => env('DB_SSLMODE', env('APP_ENV') === 'production' ? 'require' : 'prefer'),
         ],
 
         'sqlsrv' => [

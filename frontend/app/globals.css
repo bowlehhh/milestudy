@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #eef4ff;
+  --background: #f3f5f9;
   --foreground: #12223a;
   --surface: #ffffff;
   --line: #d8e4f2;
@@ -18,12 +18,9 @@ body {
 }
 
 body {
-  background:
-    radial-gradient(circle at 12% 8%, #d7e9ff 0, transparent 28%),
-    radial-gradient(circle at 90% 16%, #ffe7be 0, transparent 24%),
-    linear-gradient(180deg, #f4f8ff 0%, #f8fbff 40%, #fef7eb 100%);
+  background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sora), "Trebuchet MS", sans-serif;
+  font-family: "Segoe UI", "Noto Sans", "Trebuchet MS", sans-serif;
 }
 
 .milestudy-surface {
@@ -31,15 +28,7 @@ body {
 }
 
 .milestudy-surface::before {
-  content: "";
-  pointer-events: none;
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(to right, rgb(15 23 42 / 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(15 23 42 / 0.03) 1px, transparent 1px);
-  background-size: 32px 32px;
-  mask-image: linear-gradient(to bottom, black 35%, transparent 100%);
+  content: none;
 }
 
 .fire-orb {
@@ -50,7 +39,7 @@ body {
   align-items: center;
   justify-content: center;
   color: rgb(255 255 255 / 0.95);
-  font-family: var(--font-space-mono), monospace;
+  font-family: "Courier New", monospace;
   font-size: 0.62rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;

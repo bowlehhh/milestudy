@@ -1,5 +1,5 @@
-import { MilestudyPrototypePage } from "@/components/milestudy/MilestudyPrototypePage";
+import { MilestudyAppShell } from "@/components/milestudy/MilestudyAppShell";
 
 export default function Home() {
-  return <MilestudyPrototypePage />;
+  return <MilestudyAppShell />;
 }
